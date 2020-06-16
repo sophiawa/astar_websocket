@@ -1,0 +1,8 @@
+<canvas #canvas width="400" height="400"></canvas>
+
+<div></div>
+<button *ngIf="data" (click)="displayProb()">Display Problem</button>
+
+<div></div>
+<button *ngIf="isSoln" (click)="displaySoln()">Display Solution</button>
+<div *ngIf="isSoln == false">NO SOLUTION</div>
