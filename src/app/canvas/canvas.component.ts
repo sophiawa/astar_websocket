@@ -185,7 +185,7 @@ export class CanvasComponent implements OnInit {
 
   drawSoln() {
 
-    this.drawnData = new Data(this.src, this.dest, this.obstacles);
+    this.drawnData = new Data(this.src, this.dest, this.obstacles, this.numLines);
 
     if (this.drawSolnClickTwice === false) {
       console.log("FIRST TIME")

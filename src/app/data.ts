@@ -17,11 +17,13 @@ export class Data {
     dest: number[];
     obstacles: Obstacle[];
     dict;
+    limit: number;
 
-    constructor(src, dest, obsts) {
+    constructor(src, dest, obsts, limit) {
       this.source = src;
       this.dest = dest;
       this.obstacles = obsts;
-      this.dict = {"source" : src, "dest" : dest, "obstacles" : obsts};
+      this.dict = {"source" : src, "dest" : dest, "obstacles" : obsts, "limit" : limit};
+      this.limit = limit;
     }
 }

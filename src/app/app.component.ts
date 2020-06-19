@@ -22,7 +22,8 @@ export class AppComponent {
     data => this.data1 = {
       source: data["source"],
       dest: data["dest"],
-      obstacles: data["obstacles"]
+      obstacles: data["obstacles"],
+      limit: data["limit"]
     }
   )
   
