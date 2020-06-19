@@ -1,8 +1,47 @@
 <canvas #canvas width="400" height="400"></canvas>
 
-<div></div>
-<button *ngIf="data" (click)="displayProb()">Display Problem</button>
 
-<div></div>
-<button *ngIf="isSoln" (click)="displaySoln()">Display Solution</button>
-<div *ngIf="isSoln == false">NO SOLUTION</div>
+<button class="incr" (click)="incrDim()">+</button>
+<p class="dimension-label">{{ numLines }} X {{ numLines }}</p>
+<div><button class="decr" (click)="decrDim()">-</button></div>
+
+
+<p class="center" *ngIf="noSoln">NO SOLUTION</p>
+
+
+<div>
+
+  <button class="button" 
+    style="background-color: rgb(6, 201, 39);
+           position: relative;
+           left: 300px;
+           top: -400px;" 
+    (click)="clicked('src')">SOURCE</button>
+
+  <button class="button" 
+    style="background-color: rgb(255, 3, 3);
+          position: relative;
+          left: 204px;
+          top: -340px;" 
+    (click)="clicked('dest')">DESTINATION</button>
+
+  <button class="button" 
+    style="background-color: rgb(180, 180, 180);
+           position: relative;
+           left: 104px;
+           top: -280px;" 
+    (click)="clicked('obst')">OBSTACLE</button>
+
+  <button class="button" 
+    style="background-color: rgb(150, 199, 251);
+           position: relative;
+           left: 22px;
+           top: -220px;" 
+    (click)="clear()">CLEAR</button>
+
+</div>
+
+
+<div class="center">
+    <button class="button" style="background-color: rgb(241, 150, 251)" (click)="drawSoln()">DRAW SOLUTION</button>
+</div>

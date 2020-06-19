@@ -1,0 +1,20 @@
+html {
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
+  padding: 0px;
+  overflow: hidden;
+
+  background-image: url("/assets/background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+body {
+  min-height: 100%;
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  position: relative;
+}

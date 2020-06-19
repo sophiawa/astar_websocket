@@ -24,9 +24,9 @@ export class DataService {
         console.log(r);
         console.log('????????????');
         let data = JSON.parse(r.data);
-        console.log(data.soln);
-        console.log('!!!!!!!!!!!!');
         this.soln = data.soln;
+        console.log("Solution from data.service: ", this.soln);
+        console.log('!!!!!!!!!!!!');
         return {
           soln: data.soln
         }

@@ -17,7 +17,7 @@ export class AppComponent {
       console.log("Response from websocket: " + data);
     })
   }
-
+  
   public data1 = this.http.get('../assets/data.json').subscribe(
     data => this.data1 = {
       source: data["source"],
@@ -25,13 +25,14 @@ export class AppComponent {
       obstacles: data["obstacles"]
     }
   )
-
+  
+  /*
   sendMsg() {
     console.log("new data from client to websocket");
     this.dataService.data.next(this.data1);
     this.soln = this.dataService.soln;
     console.log("Data1: ", this.data1);
     console.log("Solution: ", this.soln);
-  }
+  }*/
   
 }

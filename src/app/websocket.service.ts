@@ -8,8 +8,6 @@ import { catchError, retry } from 'rxjs/operators';
 })
 export class WebsocketService {
 
-  dataUrl = 'assets/data.json'
-
   constructor(private http: HttpClient) { }
 
   public subject;
@@ -28,15 +26,18 @@ export class WebsocketService {
     let observable = Observable.create(obs => {
       ws.onmessage = obs.next.bind(obs);
       ws.onerror = obs.error.bind(obs);
-      ws.onclose = obs.complete.bind(obs)
-      return ws.close.bind(ws);
+      //ws.onclose = obs.complete.bind(obs)
     })
 
     let observer = {
       next: data => {
+        ws.send(JSON.stringify(data));
+        console.log("SENDING DATA FROM WEBSOCKET: ", data)
+        /*
         if (ws.readyState === WebSocket.OPEN) {
+          console.log("SENDING DATA FROM WEBSOCKET")
           ws.send(JSON.stringify(data));
-        }
+        }*/
       }
     }
 
