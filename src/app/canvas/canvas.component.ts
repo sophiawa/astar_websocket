@@ -73,6 +73,7 @@ export class CanvasComponent implements OnInit {
   }
 
   clear() {
+    window.location.reload();
     this.drawGrid();
     this.drewDest = false;
     this.drewSrc = false;
@@ -186,13 +187,14 @@ export class CanvasComponent implements OnInit {
   drawSoln() {
 
     this.drawnData = new Data(this.src, this.dest, this.obstacles, this.numLines);
-
+    /*
     if (this.drawSolnClickTwice === false) {
       console.log("FIRST TIME")
       this.dataService.data.next(this.drawnData.dict);
       this.drawSolnClickTwice = true;
       return;
     }
+    */
     this.drawSolnClickTwice = false;
     this.dataService.data.next(this.drawnData.dict);
     this.soln = this.dataService.soln;
