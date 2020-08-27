@@ -18,6 +18,29 @@ def get_min_f_node(open_set, f_scores):
   return min_node
 
 
+def check_obst_corners_touch(x, y, dir, obstacles):
+  coords = []
+  if dir == "right" or dir == "left":
+    for obst1 in obstacles:
+      for obst2 in obstacles:
+        if obst1 != obst2 and obst1["start_x"] == obst2["end_x"] and ((obst1["start_y"] == obst2["end_y"] and y == obst1["start_y"]) or (obst1["end_y"] == obst2["start_y"] and y == obst1["end_y"])):
+          coords += [ obst1["start_x"] ]
+        if obst1 != obst2 and obst1["end_x"] == obst2["start_x"] and ((obst1["start_y"] == obst2["end_y"] and y == obst1["start_y"]) or (obst1["end_y"] == obst2["start_y"] and y == obst1["end_y"])):
+          coords += [ obst1["end_x"] ]
+    return coords
+
+  if dir == "up" or dir == "down":
+    for obst1 in obstacles:
+      for obst2 in obstacles:
+        if obst1 != obst2 and obst1["start_y"] == obst2["end_y"] and ((obst1["start_x"] == obst2["end_x"] and x == obst1["start_x"]) or (obst1["end_x"] == obst2["start_x"] and x == obst1["end_x"])):
+          coords += [ obst1["start_y"] ]
+        if obst1 != obst2 and obst1["end_y"] == obst2["start_y"] and ((obst1["start_x"] == obst2["end_x"] and x == obst1["start_x"]) or (obst1["end_x"] == obst2["start_x"] and x == obst1["end_x"])):
+          coords += [ obst1["end_y"] ]
+    return coords
+  return coords
+        
+
+
 def check_obstacle(x, y, dir, obstacles):
   obst_coords = []
   up_bound = False
@@ -39,6 +62,7 @@ def check_obstacle(x, y, dir, obstacles):
     if low_bound and up_bound:
       obst_coords += [ max(max(low), max(up)) ]
     if len(obst_coords) > 0:
+      obst_coords += check_obst_corners_touch(x, y, dir, obstacles)
       return (True, (min(obst_coords), y))
   
   elif dir == "left":
@@ -54,6 +78,7 @@ def check_obstacle(x, y, dir, obstacles):
     if low_bound and up_bound:
       obst_coords += [ min(min(low), min(up)) ]
     if len(obst_coords) > 0:
+      obst_coords += check_obst_corners_touch(x, y, dir, obstacles)
       return (True, (max(obst_coords), y))
 
   elif dir == "up":
@@ -69,6 +94,7 @@ def check_obstacle(x, y, dir, obstacles):
     if low_bound and up_bound:
       obst_coords += [ max(min(low), min(up)) ]
     if len(obst_coords) > 0:
+      obst_coords += check_obst_corners_touch(x, y, dir, obstacles)
       return (True, (x, min(obst_coords)))
 
   elif dir == "down":
@@ -84,6 +110,7 @@ def check_obstacle(x, y, dir, obstacles):
     if left_bound and right_bound:
       obst_coords += [ min(max(low), max(up)) ]
     if len(obst_coords) > 0:
+      obst_coords += check_obst_corners_touch(x, y, dir, obstacles)
       return (True, (x, max(obst_coords)))
 
   return (False, -1)
@@ -175,9 +202,22 @@ def reconstruct_path(came_from, current):
   return total_path
 
 
+def add_walls(data):
+  limit = data["limit"]
+  obstacles = data["obstacles"]
+  left = { "start_x" : -1, "start_y" : -1, "end_x" : 0, "end_y" : limit + 1 }
+  right = { "start_x" : limit, "start_y" : -1, "end_x" : limit + 1, "end_y" : limit + 1 }
+  up = { "start_x" : 0, "start_y" : limit, "end_x" : limit, "end_y" : limit + 1 }
+  down = { "start_x" : 0, "start_y" : -1, "end_x" : limit, "end_y" : 0 }
+  obstacles += [ left, right, up, down ]
+  return obstacles
+
+
+
 def a_star(data):
   start = data ["source"]
   dest = data ["dest"]
+  data["obstacles"] = add_walls(data)
 
   open_set = { start }
   came_from = dict()
@@ -218,18 +258,18 @@ def test():
   
   obstacle1 = { "start_x" : 1, "start_y" : 1, "end_x" : 2, "end_y" : 2 }
   obstacle2 = { "start_x" : 3, "start_y" : 3, "end_x" : 4, "end_y" : 4 }
-  data1 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obstacle1, obstacle2] }
+  data1 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obstacle1, obstacle2], "limit" : 5 }
 
   assert(a_star(data1) == [(0, 0), (0, 5), (5, 5)])
 
 
   obstacle1 = { "start_x" : 1, "start_y" : -1, "end_x" : 3, "end_y" : 3 }
-  data2 = { "source" : (0,2), "dest" : (4,0), "obstacles" : [obstacle1] }
+  data2 = { "source" : (0,2), "dest" : (4,0), "obstacles" : [obstacle1], "limit" : 5 }
 
   assert(a_star(data2) == [(0, 2), (1, 2), (1, 3), (4, 3), (4, 0)])
 
 
-  data3 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [] }
+  data3 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [], "limit" : 5 }
 
   assert(a_star(data3) == [(0, 0), (0, 5), (5, 5)])
   
@@ -238,31 +278,31 @@ def test():
   obst2 = { "start_x" : 6, "start_y" : 3, "end_x" : 7, "end_y" : 7 }
   obst3 = { "start_x" : 4, "start_y" : 3, "end_x" : 6, "end_y" : 4 }
   obst4 = { "start_x" : 4, "start_y" : 6, "end_x" : 6, "end_y" : 7 }
-  data4 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst3, obst4] }
+  data4 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst3, obst4], "limit" : 5 }
   
   assert(a_star(data4) == False)
 
   
-  data5 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst3, obst4] }
+  data5 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst3, obst4], "limit" : 5 }
 
   assert(a_star(data5) == [(0, 0), (5, 0), (5, 3), (6, 3), (6, 5), (5, 5)])
 
 
-  data6 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst3] }
+  data6 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst3], "limit" : 5 }
 
   assert(a_star(data6) == [(0, 0), (0, 5), (0, 6), (0, 7), (5, 7), (5, 5)])
 
-  data7 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst4] }
+  data7 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst1, obst2, obst4], "limit" : 5 }
 
   assert(a_star(data7) == [(0, 0), (5, 0), (5, 5)])
 
 
-  data8 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst2, obst3, obst4] }
+  data8 = { "source" : (0,0), "dest" : (5,5), "obstacles" : [obst2, obst3, obst4], "limit" : 5 }
 
   assert(a_star(data8) == [(0, 0), (0, 5), (5, 5)])
 
   
-  data9 = { "source" : (5,5), "dest" : (0,0), "obstacles" : [obst1, obst2, obst3, obst4] }
+  data9 = { "source" : (5,5), "dest" : (0,0), "obstacles" : [obst1, obst2, obst3, obst4], "limit" : 5 }
   
   assert(a_star(data9) == False)
 
@@ -272,13 +312,13 @@ def test():
   obst3 = { "start_x" : 5, "start_y" : 0, "end_x" : 6, "end_y" : 5 }
   obst4 = { "start_x" : 3, "start_y" : 4, "end_x" : 5, "end_y" : 5 }
   obst5 = { "start_x" : 2, "start_y" : 2, "end_x" : 3, "end_y" : 5 }
-  data10 = { "source" : (7,1), "dest" : (4,3), "obstacles" : [obst1, obst2, obst3, obst4, obst5] }
+  data10 = { "source" : (7,1), "dest" : (4,3), "obstacles" : [obst1, obst2, obst3, obst4, obst5], "limit" : 5 }
   
   assert(a_star(data10) == 
   [(7, 1), (7, 3), (7, 4), (7, 5), (4, 5), (3, 5), (2, 5), (2, 3), (2, 2), (4, 2), (4, 3)])
 
 
-  data11 = { "source" : (4,3), "dest" : (7,1), "obstacles" : [obst1, obst2, obst3, obst4, obst5] }
+  data11 = { "source" : (4,3), "dest" : (7,1), "obstacles" : [obst1, obst2, obst3, obst4, obst5], "limit" : 5 }
 
   print(a_star(data11))
   
