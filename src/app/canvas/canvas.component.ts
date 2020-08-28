@@ -88,6 +88,26 @@ export class CanvasComponent implements OnInit {
     }
     console.log("firstPtSelected: ", this.firstPtSelected);
 
+    this.x = this.getNearestPt(this.x);
+    this.y = this.getNearestPt(this.y);
+    let start_x = this.x - (this.x % this.spaceBetweenLines) - this.spaceBetweenLines;
+    let start_y = this.y - (this.y % this.spaceBetweenLines) - this.spaceBetweenLines;
+    let end_x = start_x + this.spaceBetweenLines;
+    let end_y = start_y + this.spaceBetweenLines;
+
+    let newObst = new Obstacle(start_x / this.spaceBetweenLines, 
+      start_y / this.spaceBetweenLines, 
+      end_x / this.spaceBetweenLines, 
+      end_y / this.spaceBetweenLines);
+    this.obstacles.push(newObst);
+
+    this.ctx.beginPath();
+    this.ctx.fillStyle = 'gray';
+    this.ctx.fillRect(start_x, start_y, this.spaceBetweenLines, this.spaceBetweenLines);
+    console.log(newObst);
+    this.ctx.stroke();
+
+    /*
     if (this.firstPtSelected === false) {
       this.tempX = this.getNearestPt(this.x);
       this.tempY = this.getNearestPt(this.y);
@@ -124,7 +144,7 @@ export class CanvasComponent implements OnInit {
 
       this.firstPtSelected = false;
       return;
-    }
+    }*/
 
   }
 
